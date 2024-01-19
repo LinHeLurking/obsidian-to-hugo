@@ -7,6 +7,7 @@ import re
 
 
 WikiLink = TypedDict("WikiLink", {"wiki_link": str, "link": str, "text": str})
+HEADING_ALLOWED_CHAR = (" -_0123456789abcdefghijklmnopqrstuvwxyz")
 
 
 def get_wiki_links(text: str) -> List[WikiLink]:
@@ -46,11 +47,14 @@ def wiki_link_to_hugo_link(wiki_link: WikiLink) -> str:
     """
     # if the links contains a link to a heading, convert the heading part to
     # lower case and replace spaces by minus
-    link_seperated = wiki_link["link"].split("#", 1)
-    if len(link_seperated) > 1:
-        link_combined = "#".join(
-            [link_seperated[0], link_seperated[1].lower().replace(" ", "-")]
-        )
+    link_separated = wiki_link["link"].split("#", 1)
+    if len(link_separated) > 1:
+        _heading = link_separated[1].lower().replace(" ", "-")
+        heading = ""
+        for ch in _heading:
+            if ch in HEADING_ALLOWED_CHAR:
+                heading += ch 
+        link_combined = "#".join([link_separated[0], heading])
     else:
         link_combined = wiki_link["link"]
     hugo_link = f'[{wiki_link["text"]}]({{{{< ref "{link_combined}" >}}}})'

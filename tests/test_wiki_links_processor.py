@@ -66,6 +66,18 @@ class WikiLinksProcessorTestCase(unittest.TestCase):
         """
         real_out = wiki_links_processor.replace_wiki_links(real_in)
         self.assertEqual(real_out, expected_out)
+        
+    def test_drop_special_anchor_char_wiki_link(self):
+        real_in = """
+        [[aaa#C++23]]
+        [[bbb#C++ Test!]]
+        """
+        expected_out = """
+        [aaa#C++23]({{< ref "aaa#c23" >}})
+        [bbb#C++ Test!]({{< ref "bbb#c-test" >}})
+        """
+        real_out = wiki_links_processor.replace_wiki_links(real_in)
+        self.assertEqual(real_out, expected_out)
 
 
 if __name__ == "__main__":
